@@ -1,0 +1,6 @@
+{
+  "name": "Floristique - Marketplace Bunga Premium",
+  "description": "Webstore produk bunga segar, standing flower & buket dengan keranjang belanja, admin panel stok, approval pembayaran, dan laporan penjualan terintegrasi database real-time.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

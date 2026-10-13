@@ -1,0 +1,95 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "Katalog produk bunga marketplace Floristique",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "maxLength": 100 },
+        "category": { "type": "string", "enum": ["Buket Bunga", "Standing Flower", "Bunga Meja"] },
+        "price": { "type": "number" },
+        "stock": { "type": "number" },
+        "description": { "type": "string", "maxLength": 1000 },
+        "imageUrl": { "type": "string", "maxLength": 500 },
+        "rating": { "type": "number" },
+        "soldCount": { "type": "number" },
+        "isFeatured": { "type": "boolean" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["name", "category", "price", "stock", "description", "imageUrl"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Data pesanan bunga dan status approval pembayaran",
+      "type": "object",
+      "properties": {
+        "orderNumber": { "type": "string", "maxLength": 50 },
+        "customerName": { "type": "string", "maxLength": 100 },
+        "customerEmail": { "type": "string", "maxLength": 100 },
+        "customerPhone": { "type": "string", "maxLength": 30 },
+        "recipientName": { "type": "string", "maxLength": 100 },
+        "recipientPhone": { "type": "string", "maxLength": 30 },
+        "shippingAddress": { "type": "string", "maxLength": 500 },
+        "deliveryDate": { "type": "string", "maxLength": 30 },
+        "cardMessage": { "type": "string", "maxLength": 500 },
+        "items": { "type": "array" },
+        "totalAmount": { "type": "number" },
+        "paymentMethod": { "type": "string", "maxLength": 50 },
+        "paymentStatus": { "type": "string", "enum": ["pending", "paid_waiting_approval", "approved", "rejected"] },
+        "orderStatus": { "type": "string", "enum": ["pending", "processing", "shipped", "completed", "cancelled"] },
+        "paymentProofUrl": { "type": "string", "maxLength": 500 },
+        "rejectionReason": { "type": "string", "maxLength": 300 },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["orderNumber", "customerName", "customerEmail", "customerPhone", "recipientName", "shippingAddress", "totalAmount", "paymentStatus", "orderStatus"]
+    },
+    "Customer": {
+      "title": "Customer",
+      "description": "Profil dan akumulasi belanja pelanggan",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "maxLength": 100 },
+        "email": { "type": "string", "maxLength": 100 },
+        "phone": { "type": "string", "maxLength": 30 },
+        "address": { "type": "string", "maxLength": 500 },
+        "totalOrders": { "type": "number" },
+        "totalSpent": { "type": "number" },
+        "lastOrderDate": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["name", "email", "phone"]
+    },
+    "Admin": {
+      "title": "Admin",
+      "description": "Data administrator Floristique",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "maxLength": 100 },
+        "name": { "type": "string", "maxLength": 100 },
+        "role": { "type": "string", "enum": ["superadmin", "manager", "staff"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["email", "role"]
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": { "$ref": "#/entities/Product" },
+      "description": "Koleksi 12+ produk bunga dengan kategori, harga, dan stok"
+    },
+    "/orders/{orderId}": {
+      "schema": { "$ref": "#/entities/Order" },
+      "description": "Koleksi pesanan pelanggan dengan status verifikasi bukti pembayaran"
+    },
+    "/customers/{customerId}": {
+      "schema": { "$ref": "#/entities/Customer" },
+      "description": "Koleksi profil pelanggan dan riwayat transaksi"
+    },
+    "/admins/{adminId}": {
+      "schema": { "$ref": "#/entities/Admin" },
+      "description": "Koleksi akun admin berwenang"
+    }
+  }
+}
