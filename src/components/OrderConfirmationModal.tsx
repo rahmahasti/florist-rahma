@@ -43,25 +43,25 @@ export const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({
         return {
           bank: 'BCA (Bank Central Asia)',
           accountNumber: '8830192888',
-          accountName: 'PT FLORISTIQUE INDONESIA',
+          accountName: 'PT RAHMA FLORIST INDONESIA',
         };
       case 'Mandiri':
         return {
           bank: 'Bank Mandiri',
           accountNumber: '137009821221',
-          accountName: 'PT FLORISTIQUE INDONESIA',
+          accountName: 'PT RAHMA FLORIST INDONESIA',
         };
       case 'BRI':
         return {
           bank: 'Bank BRI',
           accountNumber: '020601002931508',
-          accountName: 'PT FLORISTIQUE INDONESIA',
+          accountName: 'PT RAHMA FLORIST INDONESIA',
         };
       case 'QRIS':
         return {
           bank: 'QRIS Bersama (Semua Bank & E-Wallet)',
           accountNumber: 'NMID: ID1020304050607',
-          accountName: 'FLORISTIQUE BOTANI INDONESIA',
+          accountName: 'RAHMA FLORIST BOTANI INDONESIA',
         };
     }
   };
@@ -108,7 +108,7 @@ export const OrderConfirmationModal: React.FC<OrderConfirmationModalProps> = ({
       ctx.fillText('BUKTI TRANSFER BERHASIL', 60, 45);
       ctx.font = '14px sans-serif';
       ctx.fillStyle = '#fce4ea';
-      ctx.fillText(`Floristique • ${order.paymentMethod} Mobile`, 110, 75);
+      ctx.fillText(`Rahma Florist • ${order.paymentMethod} Mobile`, 110, 75);
       
       ctx.fillStyle = '#2c3831';
       ctx.font = 'bold 15px sans-serif';

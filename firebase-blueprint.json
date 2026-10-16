@@ -2,7 +2,7 @@
   "entities": {
     "Product": {
       "title": "Product",
-      "description": "Katalog produk bunga marketplace dan inventory POS Floristique",
+      "description": "Katalog produk bunga marketplace dan inventory POS Rahma Florist",
       "type": "object",
       "properties": {
         "sku": { "type": "string", "maxLength": 50 },
@@ -106,7 +106,7 @@
     },
     "Admin": {
       "title": "Admin",
-      "description": "Data administrator Floristique",
+      "description": "Data administrator Rahma Florist",
       "type": "object",
       "properties": {
         "email": { "type": "string", "maxLength": 100 },

@@ -17,7 +17,7 @@ export const Footer: React.FC<FooterProps> = () => {
               </div>
               <div>
                 <span className="text-2xl font-serif font-bold text-white tracking-tight">
-                  Floristique
+                  Rahma Florist
                 </span>
                 <p className="text-[10px] tracking-widest uppercase text-[#fcd3dd] font-medium">
                   Atelier de Fleurs & Boutique
@@ -26,7 +26,7 @@ export const Footer: React.FC<FooterProps> = () => {
             </div>
 
             <p className="text-xs text-[#fae1e7]/80 leading-relaxed max-w-sm">
-              Floristique menghadirkan mahakarya bunga segar bernuansa botanical hijau dan kelopak pink nan anggun. Setiap tangkai dirangkai dengan dedikasi tinggi untuk merayakan setiap rasa kasih dan momen bermakna.
+              Rahma Florist menghadirkan mahakarya bunga segar bernuansa botanical hijau dan kelopak pink nan anggun. Setiap tangkai dirangkai dengan dedikasi tinggi untuk merayakan setiap rasa kasih dan momen bermakna.
             </p>
 
             <div className="flex items-center gap-2 text-xs text-[#fcd3dd] font-medium">
@@ -67,7 +67,7 @@ export const Footer: React.FC<FooterProps> = () => {
             <div className="space-y-2.5 text-xs text-[#fae1e7]/75">
               <div className="flex items-start gap-2.5">
                 <MapPin className="w-4 h-4 text-[#fcd3dd] shrink-0 mt-0.5" />
-                <span>Floristique Studio, Jl. Senopati No. 45, Kebayoran Baru, Jakarta Selatan</span>
+                <span>Rahma Florist Studio, Jl. Senopati No. 45, Kebayoran Baru, Jakarta Selatan</span>
               </div>
               <div className="flex items-center gap-2.5">
                 <Clock className="w-4 h-4 text-[#fcd3dd] shrink-0" />
@@ -79,7 +79,7 @@ export const Footer: React.FC<FooterProps> = () => {
               </div>
               <div className="flex items-center gap-2.5">
                 <Mail className="w-4 h-4 text-[#fcd3dd] shrink-0" />
-                <span>Email: contact@floristique.id</span>
+                <span>Email: contact@rahmaflorist.id</span>
               </div>
             </div>
           </div>
@@ -89,7 +89,7 @@ export const Footer: React.FC<FooterProps> = () => {
         {/* Bottom bar - clean without login button */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#fae1e7]/60">
           <p className="flex items-center gap-1">
-            © {new Date().getFullYear()} Floristique Marketplace. Dibuat dengan harmoni hijau & pink <Heart className="w-3.5 h-3.5 text-[#f7aab9] fill-[#f7aab9] inline" /> untuk setiap momen bermakna.
+            © {new Date().getFullYear()} Rahma Florist Marketplace. Dibuat dengan harmoni hijau & pink <Heart className="w-3.5 h-3.5 text-[#f7aab9] fill-[#f7aab9] inline" /> untuk setiap momen bermakna.
           </p>
 
           <div className="flex items-center gap-4 text-[#8bd1ab]">

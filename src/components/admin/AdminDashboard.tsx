@@ -297,7 +297,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `laporan_penjualan_floristique_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute('download', `laporan_penjualan_rahma_florist_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -321,12 +321,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             {/* Identity & Status */}
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#3f6351] to-[#c76e80] text-white flex items-center justify-center font-bold font-serif shadow-2xs">
-                FL
+                RF
               </div>
               <div>
                 <div className="flex items-center gap-2">
                   <h1 className="font-serif font-bold text-[#283830] text-lg">
-                    Floristique Control Center
+                    Rahma Florist Control Center
                   </h1>
                   <span className="px-2 py-0.5 rounded-full bg-[#edf5f0] text-[#395c47] text-[10px] font-semibold uppercase tracking-wider border border-[#d2e6d8]">
                     Live Firestore DB
@@ -351,7 +351,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               <button
                 onClick={() => {
                   if (confirm('Apakah Anda yakin ingin mereset dan menginisialisasi ulang 12 produk awal di Firestore? Data produk custom akan diganti ke 12 produk katalog awal.')) {
-                    resetToDefault12Products().then(() => showNotification('12 Produk Floristique berhasil di-reset ke data default!'));
+                    resetToDefault12Products().then(() => showNotification('12 Produk Rahma Florist berhasil di-reset ke data default!'));
                   }
                 }}
                 className="px-3.5 py-2 rounded-xl text-xs font-medium text-[#5c6962] border border-[#ebd0d6] hover:bg-[#fbf4f6] transition-colors flex items-center gap-1.5"
@@ -1356,7 +1356,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
           soldCount: 0,
           tag: tag.trim(),
           flowerTypes: ['Mawar Segar', 'Foliage Eukaliptus'],
-          dimensions: 'Standar Floristique',
+          dimensions: 'Standar Rahma Florist',
         });
       }
       onSaved();

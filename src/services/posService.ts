@@ -20,11 +20,11 @@ const INVENTORY_LOGS_COLLECTION = 'inventory_logs';
 const PRODUCTS_COLLECTION = 'products';
 const CUSTOMERS_COLLECTION = 'customers';
 
-// Generate receipt number like POS-FLR-20261014-8421
+// Generate receipt number like POS-RF-20261016-8421
 export function generateReceiptNumber(): string {
   const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
   const randomSuffix = Math.floor(1000 + Math.random() * 9000).toString();
-  return `POS-FLR-${dateStr}-${randomSuffix}`;
+  return `POS-RF-${dateStr}-${randomSuffix}`;
 }
 
 // Complete a POS checkout transaction with real Firestore atomic updates
@@ -63,7 +63,7 @@ export async function processPosTransaction(
             previousStock: currentStock,
             newStock: newStock,
             notes: `Penjualan POS #${txData.receiptNumber} (${txData.paymentMethod})`,
-            staffName: txData.cashierName || 'Kasir Floristique',
+            staffName: txData.cashierName || 'Kasir Rahma Florist',
             costPriceAtTime: item.costPrice || 0,
             createdAt: new Date().toISOString(),
           });

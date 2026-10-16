@@ -47,7 +47,7 @@ export const PosKasir: React.FC<PosKasirProps> = ({
   onOpenPricing
 }) => {
   // Cashier Desk State
-  const [cashierName, setCashierName] = useState('Kasir Floristique');
+  const [cashierName, setCashierName] = useState('Kasir Rahma Florist');
   const [selectedCategory, setSelectedCategory] = useState<string>('Semua');
   const [searchQuery, setSearchQuery] = useState('');
   
@@ -291,7 +291,7 @@ export const PosKasir: React.FC<PosKasirProps> = ({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="font-serif font-bold text-lg text-[#283830]">Kasir POS Floristique</h1>
+                <h1 className="font-serif font-bold text-lg text-[#283830]">Kasir POS Rahma Florist</h1>
                 <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#e8f1ec] text-[#345744] border border-[#d2e3d8]">
                   Point of Sale Offline
                 </span>
@@ -883,7 +883,7 @@ export const PosKasir: React.FC<PosKasirProps> = ({
                   <div className="w-32 h-32 mx-auto bg-white p-2 rounded-xl border border-[#ecd2d9] flex items-center justify-center shadow-2xs">
                     <QrCode className="w-24 h-24 text-[#283830]" />
                   </div>
-                  <p className="text-xs font-semibold text-[#283830]">QRIS Dinamis Floristique</p>
+                  <p className="text-xs font-semibold text-[#283830]">QRIS Dinamis Rahma Florist</p>
                   <p className="text-[11px] text-[#718077]">
                     Arahkan kamera HP pelanggan ke QRIS untuk pembayaran Rp {finalTotalAmount.toLocaleString('id-ID')}
                   </p>
@@ -973,7 +973,7 @@ export const PosKasir: React.FC<PosKasirProps> = ({
               
               {/* Store Header */}
               <div className="text-center space-y-1 pb-3 border-b border-dashed border-gray-300">
-                <h2 className="font-serif font-bold text-base tracking-wider text-black">FLORISTIQUE</h2>
+                <h2 className="font-serif font-bold text-base tracking-wider text-black">RAHMA FLORIST</h2>
                 <p className="text-[10px] text-gray-600">Atelier de Fleurs & Boutique</p>
                 <p className="text-[9px] text-gray-500">Jl. Senopati No. 88, Kebayoran Baru, Jakarta</p>
                 <p className="text-[9px] text-gray-500">WhatsApp: 0812-8888-9999</p>
@@ -1056,7 +1056,7 @@ export const PosKasir: React.FC<PosKasirProps> = ({
                     <div className="text-center pt-2 space-y-1 text-[9px] text-gray-500">
                       <p className="font-semibold text-gray-700">*** TERIMA KASIH ***</p>
                       <p>Bunga segar garansi 24 jam</p>
-                      <p>www.floristique-boutique.com</p>
+                      <p>www.rahmaflorist.id</p>
                     </div>
                   </>
                 );

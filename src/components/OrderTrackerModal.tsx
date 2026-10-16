@@ -84,7 +84,7 @@ export const OrderTrackerModal: React.FC<OrderTrackerModalProps> = ({
             </div>
             <div>
               <h3 className="font-serif font-bold text-xl text-white">Lacak Status Pesanan Bunga</h3>
-              <p className="text-xs text-[#fae1e6]">Pantau status pembayaran & kurir Floristique secara real-time</p>
+              <p className="text-xs text-[#fae1e6]">Pantau status pembayaran & kurir Rahma Florist secara real-time</p>
             </div>
           </div>
           <button
@@ -103,7 +103,7 @@ export const OrderTrackerModal: React.FC<OrderTrackerModalProps> = ({
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Masukkan Nomor Invoice (misal: INV-FLR-...) atau No WhatsApp..."
+              placeholder="Masukkan Nomor Invoice (misal: INV-RF-...) atau No WhatsApp..."
               className="w-full pl-10 pr-4 py-2.5 bg-white border border-[#ebd0d6] rounded-xl text-xs sm:text-sm text-[#283830] placeholder:text-[#9aa7a0] focus:outline-hidden focus:border-[#b5586b] focus:ring-2 focus:ring-[#faebef]"
             />
           </div>

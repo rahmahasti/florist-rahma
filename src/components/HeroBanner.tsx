@@ -91,7 +91,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ onCategoryClick }) => {
               <div className="relative rounded-3xl overflow-hidden shadow-xl border-4 border-white bg-[#fcedf0]/40 aspect-4/5 ring-1 ring-[#f2d8de]">
                 <img
                   src="https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=900&q=85"
-                  alt="Floristique Signature Bouquet"
+                  alt="Rahma Florist Signature Bouquet"
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#1b2621]/60 via-transparent to-transparent flex flex-col justify-end p-6 text-white">

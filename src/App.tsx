@@ -127,7 +127,7 @@ function FloristiqueApp() {
               <Flower2 className="w-8 h-8 animate-spin text-[#fdf2f4]" />
             </div>
             <div>
-              <h2 className="font-serif font-bold text-xl text-[#283830]">Menghubungkan ke Floristique Database</h2>
+              <h2 className="font-serif font-bold text-xl text-[#283830]">Menghubungkan ke Rahma Florist Database</h2>
               <p className="text-xs text-[#a84457] mt-1 font-medium">Memuat 12 koleksi bunga segar & sinkronisasi real-time Firestore...</p>
             </div>
           </div>

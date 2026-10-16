@@ -76,7 +76,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
             <div>
               <span className="text-2xl font-serif font-bold tracking-tight text-[#283830] group-hover:text-[#3f6351] transition-colors">
-                Floristique
+                Rahma Florist
               </span>
               <p className="text-[10px] tracking-widest uppercase font-medium text-[#b55e71] flex items-center gap-1.5">
                 <span>Atelier de Fleurs</span>
@@ -180,7 +180,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       ? 'bg-[#3f6351] text-white shadow-xs'
                       : 'text-[#5c6a62] hover:text-[#283830] hover:bg-[#fae7eb]'
                   }`}
-                  title="Panel Admin Floristique"
+                  title="Panel Admin Rahma Florist"
                 >
                   <LayoutDashboard className="w-3.5 h-3.5" />
                   <span className="hidden sm:inline">Admin</span>
