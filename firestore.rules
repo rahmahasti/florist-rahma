@@ -18,10 +18,10 @@ service cloud.firestore {
       return id is string && id.size() > 0 && id.size() <= 128;
     }
 
-    // Products catalog: Publicly viewable for webstore browsing
+    // Products catalog: Publicly viewable for webstore browsing & POS
     match /products/{productId} {
       allow read: if true;
-      allow create, update, delete: if true; // Allows store seeding, inventory updates upon checkout, and admin edits
+      allow create, update, delete: if true;
     }
 
     // Orders: Anyone can create order and upload payment proof; admin can manage & approve
@@ -34,6 +34,16 @@ service cloud.firestore {
 
     // Customers: Manage customer contact details and transaction history
     match /customers/{customerId} {
+      allow read, write: if true;
+    }
+
+    // POS Transactions: Kasir offline transaksi toko
+    match /pos_transactions/{txId} {
+      allow read, write: if true;
+    }
+
+    // Inventory logs: Mutasi stok barang masuk, keluar, dan opname
+    match /inventory_logs/{logId} {
       allow read, write: if true;
     }
 

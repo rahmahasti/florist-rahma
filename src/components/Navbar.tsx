@@ -8,15 +8,16 @@ import {
   CheckCircle2, 
   Sparkles,
   LayoutDashboard,
-  Store
+  Store,
+  CreditCard
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { Order } from '../types';
 
 interface NavbarProps {
   onOpenOrderTracker: () => void;
-  currentView: 'store' | 'admin';
-  setCurrentView: (view: 'store' | 'admin') => void;
+  currentView: 'store' | 'pos' | 'admin';
+  setCurrentView: (view: 'store' | 'pos' | 'admin') => void;
   orders: Order[];
   searchQuery: string;
   setSearchQuery: (query: string) => void;
@@ -139,34 +140,58 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             )}
 
-            {/* Seamless Mode Switcher: Toko vs Admin Panel (no login button) */}
+            {/* Seamless Mode Switcher: Toko vs Kasir POS vs Admin Panel (no login button) */}
             <div className="flex items-center border-l border-[#f0dce1] pl-2 sm:pl-3">
-              <button
-                onClick={() => setCurrentView(currentView === 'admin' ? 'store' : 'admin')}
-                className={`inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium rounded-xl transition-all ${
-                  currentView === 'admin'
-                    ? 'bg-[#3f6351] text-white shadow-xs'
-                    : 'bg-[#f4f7f5] text-[#3f6351] hover:bg-[#e9f0ec] border border-[#dce8e1]'
-                }`}
-                title="Beralih antara Toko Bunga dan Panel Admin"
-              >
-                {currentView === 'admin' ? (
-                  <>
-                    <Store className="w-4 h-4 text-[#fae1e6]" />
-                    <span>Kembali ke Toko</span>
-                  </>
-                ) : (
-                  <>
-                    <LayoutDashboard className="w-4 h-4 text-[#4f7863]" />
-                    <span>Panel Admin</span>
-                    {pendingApprovalCount > 0 && (
-                      <span className="bg-[#cc6379] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-2xs">
-                        {pendingApprovalCount}
-                      </span>
-                    )}
-                  </>
-                )}
-              </button>
+              <div className="bg-[#f7f5f4] p-1 rounded-2xl border border-[#ebd7dc] flex items-center gap-1">
+                
+                {/* Store Button */}
+                <button
+                  onClick={() => setCurrentView('store')}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl transition-all ${
+                    currentView === 'store'
+                      ? 'bg-[#3f6351] text-white shadow-xs'
+                      : 'text-[#5c6a62] hover:text-[#283830] hover:bg-[#fae7eb]'
+                  }`}
+                  title="Katalog Toko Bunga Online"
+                >
+                  <Store className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Toko</span>
+                </button>
+
+                {/* Kasir POS Button */}
+                <button
+                  onClick={() => setCurrentView('pos')}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl transition-all ${
+                    currentView === 'pos'
+                      ? 'bg-[#3f6351] text-white shadow-xs'
+                      : 'text-[#5c6a62] hover:text-[#283830] hover:bg-[#fae7eb]'
+                  }`}
+                  title="Kasir POS Toko Offline"
+                >
+                  <CreditCard className="w-3.5 h-3.5 text-[#d68b9a]" />
+                  <span>Kasir POS</span>
+                </button>
+
+                {/* Admin Button */}
+                <button
+                  onClick={() => setCurrentView('admin')}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl transition-all ${
+                    currentView === 'admin'
+                      ? 'bg-[#3f6351] text-white shadow-xs'
+                      : 'text-[#5c6a62] hover:text-[#283830] hover:bg-[#fae7eb]'
+                  }`}
+                  title="Panel Admin Floristique"
+                >
+                  <LayoutDashboard className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Admin</span>
+                  {pendingApprovalCount > 0 && (
+                    <span className="bg-[#cc6379] text-white text-[10px] font-bold px-1.5 py-0.2 rounded-full shadow-2xs">
+                      {pendingApprovalCount}
+                    </span>
+                  )}
+                </button>
+
+              </div>
             </div>
 
           </div>

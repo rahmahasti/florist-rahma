@@ -84,7 +84,7 @@ export async function approvePaymentProof(orderId: string, adminNotes?: string):
         productSnaps.push({ ref: prodRef, doc: prodDoc, item });
       }
 
-      // 2. Perform updates
+      // 2. Perform updates & inventory logging
       for (const { ref, doc: pDoc, item } of productSnaps) {
         if (pDoc.exists()) {
           const currentStock = Number(pDoc.data().stock) || 0;
@@ -95,6 +95,22 @@ export async function approvePaymentProof(orderId: string, adminNotes?: string):
             stock: newStock,
             soldCount: newSold,
             updatedAt: new Date().toISOString()
+          });
+
+          // Log stock deduction in inventory_logs
+          const logRef = doc(collection(db, 'inventory_logs'));
+          transaction.set(logRef, {
+            productId: item.productId,
+            productSku: pDoc.data().sku || '',
+            productName: item.productName,
+            type: 'out',
+            quantityChange: -item.quantity,
+            previousStock: currentStock,
+            newStock: newStock,
+            notes: `Pesanan Webstore #${orderData.orderNumber} Disetujui`,
+            staffName: 'Admin Webstore',
+            costPriceAtTime: pDoc.data().costPrice || 0,
+            createdAt: new Date().toISOString(),
           });
         }
       }

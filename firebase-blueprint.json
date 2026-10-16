@@ -2,13 +2,16 @@
   "entities": {
     "Product": {
       "title": "Product",
-      "description": "Katalog produk bunga marketplace Floristique",
+      "description": "Katalog produk bunga marketplace dan inventory POS Floristique",
       "type": "object",
       "properties": {
+        "sku": { "type": "string", "maxLength": 50 },
         "name": { "type": "string", "maxLength": 100 },
         "category": { "type": "string", "enum": ["Buket Bunga", "Standing Flower", "Bunga Meja"] },
-        "price": { "type": "number" },
+        "costPrice": { "type": "number", "description": "Harga Beli / HPP" },
+        "price": { "type": "number", "description": "Harga Jual" },
         "stock": { "type": "number" },
+        "minStockAlert": { "type": "number" },
         "description": { "type": "string", "maxLength": 1000 },
         "imageUrl": { "type": "string", "maxLength": 500 },
         "rating": { "type": "number" },
@@ -61,6 +64,46 @@
       },
       "required": ["name", "email", "phone"]
     },
+    "PosTransaction": {
+      "title": "PosTransaction",
+      "description": "Transaksi kasir POS offline toko bunga dengan kalkulasi profit",
+      "type": "object",
+      "properties": {
+        "receiptNumber": { "type": "string", "maxLength": 50 },
+        "cashierName": { "type": "string", "maxLength": 100 },
+        "customerName": { "type": "string", "maxLength": 100 },
+        "customerPhone": { "type": "string", "maxLength": 30 },
+        "items": { "type": "array" },
+        "subtotal": { "type": "number" },
+        "discount": { "type": "number" },
+        "totalAmount": { "type": "number" },
+        "totalCost": { "type": "number", "description": "Total HPP" },
+        "profitAmount": { "type": "number", "description": "Laba Bersih" },
+        "profitMargin": { "type": "number", "description": "Rasio Profit %" },
+        "paymentMethod": { "type": "string", "enum": ["Tunai", "QRIS", "Debit/Kartu", "Transfer"] },
+        "amountTendered": { "type": "number", "description": "Uang Diterima" },
+        "changeAmount": { "type": "number", "description": "Kembalian" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["receiptNumber", "items", "totalAmount", "paymentMethod", "amountTendered"]
+    },
+    "InventoryLog": {
+      "title": "InventoryLog",
+      "description": "Mutasi dan riwayat pergerakan stok bunga",
+      "type": "object",
+      "properties": {
+        "productId": { "type": "string", "maxLength": 100 },
+        "productName": { "type": "string", "maxLength": 100 },
+        "type": { "type": "string", "enum": ["in", "out", "opname"] },
+        "quantityChange": { "type": "number" },
+        "previousStock": { "type": "number" },
+        "newStock": { "type": "number" },
+        "notes": { "type": "string", "maxLength": 300 },
+        "staffName": { "type": "string", "maxLength": 100 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["productId", "type", "quantityChange", "newStock", "createdAt"]
+    },
     "Admin": {
       "title": "Admin",
       "description": "Data administrator Floristique",
@@ -77,7 +120,7 @@
   "firestore": {
     "/products/{productId}": {
       "schema": { "$ref": "#/entities/Product" },
-      "description": "Koleksi 12+ produk bunga dengan kategori, harga, dan stok"
+      "description": "Koleksi produk bunga dengan HPP, harga jual, dan stok"
     },
     "/orders/{orderId}": {
       "schema": { "$ref": "#/entities/Order" },
@@ -86,6 +129,14 @@
     "/customers/{customerId}": {
       "schema": { "$ref": "#/entities/Customer" },
       "description": "Koleksi profil pelanggan dan riwayat transaksi"
+    },
+    "/pos_transactions/{txId}": {
+      "schema": { "$ref": "#/entities/PosTransaction" },
+      "description": "Koleksi transaksi kasir POS toko fisik dengan hitungan laba"
+    },
+    "/inventory_logs/{logId}": {
+      "schema": { "$ref": "#/entities/InventoryLog" },
+      "description": "Riwayat mutasi barang masuk, keluar kasir, dan penyesuaian stok opname"
     },
     "/admins/{adminId}": {
       "schema": { "$ref": "#/entities/Admin" },

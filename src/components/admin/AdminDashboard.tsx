@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   Package, 
   ShoppingCart, 
@@ -26,9 +26,13 @@ import {
   Check, 
   Sparkles,
   ArrowUpRight,
-  Flower
+  Flower,
+  CreditCard,
+  Tag,
+  Calculator,
+  Store
 } from 'lucide-react';
-import { Product, Order, Customer, ProductCategory, OrderStatus } from '../../types';
+import { Product, Order, Customer, ProductCategory, OrderStatus, InventoryLog, PosTransaction } from '../../types';
 import { 
   updateProductStock, 
   addProduct, 
@@ -42,21 +46,38 @@ import {
   updateOrderStatus 
 } from '../../services/orderService';
 import { formatIDR, formatDate } from '../../utils/formatters';
+import { PosKasir } from '../pos/PosKasir';
+import { InventoryManagement } from '../inventory/InventoryManagement';
+import { PriceProfitSettings } from '../pricing/PriceProfitSettings';
 
 interface AdminDashboardProps {
   products: Product[];
   orders: Order[];
   customers: Customer[];
+  inventoryLogs?: InventoryLog[];
+  posTransactions?: PosTransaction[];
+  defaultTab?: 'orders' | 'pos' | 'products' | 'inventory' | 'pricing' | 'customers' | 'reports';
   onReturnToStore: () => void;
+  onOpenPos?: () => void;
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   products,
   orders,
   customers,
+  inventoryLogs = [],
+  posTransactions = [],
+  defaultTab = 'orders',
   onReturnToStore,
+  onOpenPos,
 }) => {
-  const [activeTab, setActiveTab] = useState<'orders' | 'products' | 'customers' | 'reports'>('orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'pos' | 'products' | 'inventory' | 'pricing' | 'customers' | 'reports'>(defaultTab);
+
+  useEffect(() => {
+    if (defaultTab) {
+      setActiveTab(defaultTab);
+    }
+  }, [defaultTab]);
 
   // Search and filter states
   const [productSearch, setProductSearch] = useState('');
@@ -136,11 +157,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     );
   }, [customers, customerSearch]);
 
-  // Sales Analytics KPIs
+  // Sales Analytics KPIs (Combined Webstore + POS Kasir)
   const analytics = useMemo(() => {
     const validOrders = orders.filter((o) => o.paymentStatus === 'approved');
-    const totalRevenue = validOrders.reduce((sum, o) => sum + o.totalAmount, 0);
-    const totalSuccessfulOrders = validOrders.length;
+    const onlineRevenue = validOrders.reduce((sum, o) => sum + o.totalAmount, 0);
+    const posRevenue = posTransactions.reduce((sum, p) => sum + p.totalAmount, 0);
+    const totalRevenue = onlineRevenue + posRevenue;
+    
+    const totalSuccessfulOrders = validOrders.length + posTransactions.length;
     
     let totalItemsSold = 0;
     const categoryRevenue: Record<ProductCategory, number> = {
@@ -158,16 +182,40 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       });
     });
 
+    posTransactions.forEach((posTx) => {
+      posTx.items.forEach((item) => {
+        totalItemsSold += item.quantity;
+        if (categoryRevenue[item.category] !== undefined) {
+          categoryRevenue[item.category] += item.subtotal;
+        }
+      });
+    });
+
+    const posCost = posTransactions.reduce((sum, p) => sum + p.totalCost, 0);
+    const onlineCost = validOrders.reduce((sum, o) => {
+      return sum + o.items.reduce((iSum, it) => iSum + (it.costPrice || Math.round(it.price * 0.6)) * it.quantity, 0);
+    }, 0);
+    const totalCost = posCost + onlineCost;
+    const totalNetProfit = Math.max(0, totalRevenue - totalCost);
+    const profitMarginPercent = totalRevenue > 0 ? Math.round((totalNetProfit / totalRevenue) * 100) : 0;
+
     const averageOrderValue = totalSuccessfulOrders > 0 ? totalRevenue / totalSuccessfulOrders : 0;
 
     return {
+      onlineRevenue,
+      posRevenue,
       totalRevenue,
+      totalCost,
+      totalNetProfit,
+      profitMarginPercent,
+      posTransactionsCount: posTransactions.length,
+      onlineOrdersCount: validOrders.length,
       totalSuccessfulOrders,
       totalItemsSold,
       averageOrderValue,
       categoryRevenue,
     };
-  }, [orders]);
+  }, [orders, posTransactions]);
 
   // Stock Handlers
   const handleQuickStockChange = async (productId: string, currentStock: number, delta: number) => {
@@ -316,59 +364,95 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
           </div>
 
-          {/* Navigation Tabs with Soft Sage & Rose */}
-          <div className="flex space-x-1 sm:space-x-3 border-t border-[#f2dee3] pt-1 overflow-x-auto">
+          {/* Navigation Tabs with Soft Sage & Blush Harmony */}
+          <div className="flex space-x-1 sm:space-x-2 border-t border-[#f2dee3] pt-1 overflow-x-auto scrollbar-none text-xs sm:text-sm">
             <button
               onClick={() => setActiveTab('orders')}
-              className={`py-3 px-4 text-xs sm:text-sm font-semibold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${
+              className={`py-3 px-3.5 font-semibold border-b-2 transition-all flex items-center gap-1.5 whitespace-nowrap ${
                 activeTab === 'orders'
                   ? 'border-[#b5586b] text-[#8c3649]'
                   : 'border-transparent text-[#66756d] hover:text-[#283830]'
               }`}
             >
               <ShoppingCart className="w-4 h-4 text-[#b5586b]" />
-              <span>Kelola Pesanan & Approval Bukti</span>
+              <span>Pesanan & Bukti Bayar</span>
               {waitingApprovalOrders.length > 0 && (
-                <span className="bg-[#b5586b] text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-2xs">
-                  {waitingApprovalOrders.length} Butuh Approval
+                <span className="bg-[#b5586b] text-white text-[10px] font-bold px-1.5 py-0.2 rounded-full shadow-2xs">
+                  {waitingApprovalOrders.length}
                 </span>
               )}
             </button>
 
             <button
+              onClick={() => setActiveTab('pos')}
+              className={`py-3 px-3.5 font-semibold border-b-2 transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                activeTab === 'pos'
+                  ? 'border-[#3f6351] text-[#2c4739]'
+                  : 'border-transparent text-[#66756d] hover:text-[#283830]'
+              }`}
+            >
+              <CreditCard className="w-4 h-4 text-[#3f6351]" />
+              <span>Kasir POS ({posTransactions.length})</span>
+            </button>
+
+            <button
               onClick={() => setActiveTab('products')}
-              className={`py-3 px-4 text-xs sm:text-sm font-semibold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${
+              className={`py-3 px-3.5 font-semibold border-b-2 transition-all flex items-center gap-1.5 whitespace-nowrap ${
                 activeTab === 'products'
                   ? 'border-[#3f6351] text-[#2c4739]'
                   : 'border-transparent text-[#66756d] hover:text-[#283830]'
               }`}
             >
               <Package className="w-4 h-4 text-[#3f6351]" />
-              <span>Katalog Produk & Stok ({products.length})</span>
+              <span>Katalog Produk ({products.length})</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('inventory')}
+              className={`py-3 px-3.5 font-semibold border-b-2 transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                activeTab === 'inventory'
+                  ? 'border-[#3f6351] text-[#2c4739]'
+                  : 'border-transparent text-[#66756d] hover:text-[#283830]'
+              }`}
+            >
+              <Tag className="w-4 h-4 text-[#3f6351]" />
+              <span>Inventory & Stok ({inventoryLogs.length})</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('pricing')}
+              className={`py-3 px-3.5 font-semibold border-b-2 transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                activeTab === 'pricing'
+                  ? 'border-[#3f6351] text-[#2c4739]'
+                  : 'border-transparent text-[#66756d] hover:text-[#283830]'
+              }`}
+            >
+              <Calculator className="w-4 h-4 text-[#3f6351]" />
+              <span>Pengaturan Harga & Auto Ratio</span>
             </button>
 
             <button
               onClick={() => setActiveTab('customers')}
-              className={`py-3 px-4 text-xs sm:text-sm font-semibold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${
+              className={`py-3 px-3.5 font-semibold border-b-2 transition-all flex items-center gap-1.5 whitespace-nowrap ${
                 activeTab === 'customers'
                   ? 'border-[#3f6351] text-[#2c4739]'
                   : 'border-transparent text-[#66756d] hover:text-[#283830]'
               }`}
             >
               <Users className="w-4 h-4 text-[#3f6351]" />
-              <span>Data Pelanggan ({customers.length})</span>
+              <span>Pelanggan ({customers.length})</span>
             </button>
 
             <button
               onClick={() => setActiveTab('reports')}
-              className={`py-3 px-4 text-xs sm:text-sm font-semibold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${
+              className={`py-3 px-3.5 font-semibold border-b-2 transition-all flex items-center gap-1.5 whitespace-nowrap ${
                 activeTab === 'reports'
                   ? 'border-[#b5586b] text-[#8c3649]'
                   : 'border-transparent text-[#66756d] hover:text-[#283830]'
               }`}
             >
               <TrendingUp className="w-4 h-4 text-[#b5586b]" />
-              <span>Laporan Sales & Analitik</span>
+              <span>Laporan Sales & Profit</span>
             </button>
           </div>
 
@@ -910,54 +994,118 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         {activeTab === 'reports' && (
           <div className="space-y-6">
             
-            {/* KPI Cards in Soft Pastel Theme */}
+            {/* KPI Cards in Soft Pastel Theme with Profit & HPP */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="bg-white p-5 rounded-2xl border border-[#ebd0d6] shadow-2xs space-y-2">
                 <span className="text-[11px] uppercase font-bold text-[#9e4659] tracking-wider">
-                  Total Omset Terverifikasi
+                  Total Omset Penjualan
                 </span>
                 <p className="font-serif text-2xl sm:text-3xl font-bold text-[#324f40]">
                   {formatIDR(analytics.totalRevenue)}
                 </p>
+                <div className="text-[10px] text-[#7d8c83] space-y-0.5">
+                  <div className="flex justify-between">
+                    <span>Webstore:</span>
+                    <strong className="text-[#324f40]">{formatIDR(analytics.onlineRevenue)}</strong>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Kasir POS:</span>
+                    <strong className="text-[#324f40]">{formatIDR(analytics.posRevenue)}</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white p-5 rounded-2xl border border-[#ebd0d6] shadow-2xs space-y-2">
+                <span className="text-[11px] uppercase font-bold text-[#395c47] tracking-wider">
+                  Total Modal HPP (Biaya Bunga)
+                </span>
+                <p className="font-serif text-2xl sm:text-3xl font-bold text-[#283830]">
+                  {formatIDR(analytics.totalCost)}
+                </p>
                 <p className="text-[11px] text-[#7d8c83]">
-                  Dari pesanan berstatus pembayaran disetujui
+                  Berdasarkan harga beli modal per rangkaian
+                </p>
+              </div>
+
+              <div className="bg-gradient-to-br from-white to-[#fcf2f4] p-5 rounded-2xl border border-[#fadce3] shadow-2xs space-y-2">
+                <span className="text-[11px] uppercase font-bold text-[#b55e71] tracking-wider flex items-center justify-between">
+                  <span>Keuntungan Bersih (Profit)</span>
+                  <span className="bg-[#b55e71] text-white px-2 py-0.5 rounded-full text-[10px]">
+                    +{analytics.profitMarginPercent}%
+                  </span>
+                </span>
+                <p className="font-serif text-2xl sm:text-3xl font-bold text-[#3f6351]">
+                  +{formatIDR(analytics.totalNetProfit)}
+                </p>
+                <p className="text-[11px] text-[#7d8c83]">
+                  Total omset dikurangi HPP bunga terjual
                 </p>
               </div>
 
               <div className="bg-white p-5 rounded-2xl border border-[#ebd0d6] shadow-2xs space-y-2">
-                <span className="text-[11px] uppercase font-bold text-[#9e4659] tracking-wider">
-                  Pesanan Sukses
+                <span className="text-[11px] uppercase font-bold text-[#395c47] tracking-wider">
+                  Total Transaksi Selesai
                 </span>
                 <p className="font-serif text-2xl sm:text-3xl font-bold text-[#283830]">
                   {analytics.totalSuccessfulOrders} Transaksi
                 </p>
                 <p className="text-[11px] text-[#7d8c83]">
-                  Total pesanan masuk: {orders.length}
+                  {analytics.onlineOrdersCount} Online Webstore • {analytics.posTransactionsCount} Kasir POS
                 </p>
               </div>
+            </div>
 
-              <div className="bg-white p-5 rounded-2xl border border-[#ebd0d6] shadow-2xs space-y-2">
-                <span className="text-[11px] uppercase font-bold text-[#395c47] tracking-wider">
-                  Bunga Terjual
-                </span>
-                <p className="font-serif text-2xl sm:text-3xl font-bold text-[#283830]">
-                  {analytics.totalItemsSold} Rangkaian
-                </p>
-                <p className="text-[11px] text-[#7d8c83]">
-                  Unit bunga terkirim ke customer
-                </p>
+            {/* Sales Channel Breakdown Card */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-white p-5 rounded-2xl border border-[#ebd0d6] shadow-2xs space-y-3">
+                <h4 className="font-serif font-bold text-[#283830] text-sm flex items-center gap-2">
+                  <Store className="w-4 h-4 text-[#3f6351]" />
+                  <span>Komparasi Channel Penjualan</span>
+                </h4>
+                <div className="space-y-2 text-xs">
+                  <div>
+                    <div className="flex justify-between font-semibold text-[#48564f] mb-1">
+                      <span>Online Webstore ({analytics.onlineOrdersCount} order)</span>
+                      <span>{formatIDR(analytics.onlineRevenue)}</span>
+                    </div>
+                    <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-[#3f6351] rounded-full"
+                        style={{ width: `${analytics.totalRevenue > 0 ? (analytics.onlineRevenue / analytics.totalRevenue) * 100 : 0}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between font-semibold text-[#48564f] mb-1">
+                      <span>Kasir POS Toko Offline ({analytics.posTransactionsCount} struk)</span>
+                      <span>{formatIDR(analytics.posRevenue)}</span>
+                    </div>
+                    <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-[#c76e80] rounded-full"
+                        style={{ width: `${analytics.totalRevenue > 0 ? (analytics.posRevenue / analytics.totalRevenue) * 100 : 0}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div className="bg-white p-5 rounded-2xl border border-[#ebd0d6] shadow-2xs space-y-2">
-                <span className="text-[11px] uppercase font-bold text-[#395c47] tracking-wider">
-                  Average Order Value (AOV)
-                </span>
-                <p className="font-serif text-2xl sm:text-3xl font-bold text-[#283830]">
-                  {formatIDR(analytics.averageOrderValue)}
-                </p>
-                <p className="text-[11px] text-[#7d8c83]">
-                  Rata-rata belanja per pesanan
-                </p>
+              <div className="bg-white p-5 rounded-2xl border border-[#ebd0d6] shadow-2xs space-y-3">
+                <h4 className="font-serif font-bold text-[#283830] text-sm flex items-center gap-2">
+                  <Calculator className="w-4 h-4 text-[#c76e80]" />
+                  <span>Ringkasan Margin Bunga</span>
+                </h4>
+                <div className="grid grid-cols-2 gap-3 text-xs pt-1">
+                  <div className="bg-[#faf5f6] p-3 rounded-xl border border-[#edd7dd]">
+                    <span className="text-[10px] text-[#718077] block">Bunga Terjual:</span>
+                    <strong className="text-base text-[#283830]">{analytics.totalItemsSold} Rangkaian</strong>
+                  </div>
+                  <div className="bg-[#f4f7f5] p-3 rounded-xl border border-[#dce8e1]">
+                    <span className="text-[10px] text-[#718077] block">Rata-rata Order (AOV):</span>
+                    <strong className="text-sm text-[#3f6351]">{formatIDR(analytics.averageOrderValue)}</strong>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -1028,6 +1176,37 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             </div>
 
           </div>
+        )}
+
+        {/* TAB 5: POS KASIR */}
+        {activeTab === 'pos' && (
+          <PosKasir
+            products={products}
+            customers={customers}
+            posTransactions={posTransactions}
+            onReturnToStore={onReturnToStore}
+            onOpenInventory={() => setActiveTab('inventory')}
+            onOpenPricing={() => setActiveTab('pricing')}
+          />
+        )}
+
+        {/* TAB 6: INVENTORY & STOCK */}
+        {activeTab === 'inventory' && (
+          <InventoryManagement
+            products={products}
+            inventoryLogs={inventoryLogs}
+            onOpenPos={() => setActiveTab('pos')}
+            onOpenPricing={() => setActiveTab('pricing')}
+          />
+        )}
+
+        {/* TAB 7: PRICING & AUTO RATIO PROFIT */}
+        {activeTab === 'pricing' && (
+          <PriceProfitSettings
+            products={products}
+            onOpenInventory={() => setActiveTab('inventory')}
+            onOpenPos={() => setActiveTab('pos')}
+          />
         )}
 
       </main>
@@ -1137,6 +1316,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
 }) => {
   const [name, setName] = useState(initialProduct?.name || '');
   const [category, setCategory] = useState<ProductCategory>(initialProduct?.category || 'Buket Bunga');
+  const [costPrice, setCostPrice] = useState(initialProduct?.costPrice || Math.round((initialProduct?.price || 450000) * 0.6));
   const [price, setPrice] = useState(initialProduct?.price || 450000);
   const [stock, setStock] = useState(initialProduct?.stock || 10);
   const [description, setDescription] = useState(initialProduct?.description || '');
@@ -1156,6 +1336,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
         await updateProduct(initialProduct.id, {
           name: name.trim(),
           category,
+          costPrice: Number(costPrice) || Math.round(Number(price) * 0.6),
           price: Number(price),
           stock: Number(stock),
           description: description.trim(),
@@ -1166,6 +1347,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
         await addProduct({
           name: name.trim(),
           category,
+          costPrice: Number(costPrice) || Math.round(Number(price) * 0.6),
           price: Number(price),
           stock: Number(stock),
           description: description.trim(),
@@ -1235,9 +1417,21 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="block font-semibold text-[#3b4740] mb-1">Harga (IDR) *</label>
+              <label className="block font-semibold text-[#3b4740] mb-1">Harga Beli / HPP *</label>
+              <input
+                type="number"
+                required
+                min={0}
+                step={5000}
+                value={costPrice}
+                onChange={(e) => setCostPrice(Number(e.target.value))}
+                className="w-full px-3 py-2 rounded-xl border border-[#ebd0d6] text-[#283830]"
+              />
+            </div>
+            <div>
+              <label className="block font-semibold text-[#3b4740] mb-1">Harga Jual *</label>
               <input
                 type="number"
                 required
@@ -1249,7 +1443,7 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({
               />
             </div>
             <div>
-              <label className="block font-semibold text-[#3b4740] mb-1">Stok Fisik Tersedia *</label>
+              <label className="block font-semibold text-[#3b4740] mb-1">Stok Tersedia *</label>
               <input
                 type="number"
                 required

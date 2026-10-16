@@ -6,7 +6,8 @@ import {
   updateDoc, 
   deleteDoc, 
   onSnapshot, 
-  addDoc 
+  addDoc,
+  writeBatch
 } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Product } from '../types';
@@ -47,12 +48,21 @@ export function subscribeToProducts(
       const products: Product[] = [];
       snapshot.forEach((docSnapshot) => {
         const data = docSnapshot.data();
+        const price = Number(data.price) || 0;
+        // If costPrice not yet set in older doc, compute default HPP ~60% of price
+        const costPrice = Number(data.costPrice) || Math.round(price * 0.6);
+        const sku = data.sku || `SKU-${docSnapshot.id.toUpperCase()}`;
+        const minStockAlert = Number(data.minStockAlert) || 3;
+
         products.push({
           id: docSnapshot.id,
+          sku,
           name: data.name || '',
           category: data.category || 'Buket Bunga',
-          price: Number(data.price) || 0,
+          costPrice,
+          price,
           stock: Number(data.stock) || 0,
+          minStockAlert,
           description: data.description || '',
           imageUrl: data.imageUrl || '',
           rating: Number(data.rating) || 5.0,
@@ -111,6 +121,46 @@ export async function updateProductStock(id: string, newStock: number): Promise<
     });
   } catch (error) {
     handleFirestoreError(error, OperationType.UPDATE, `${PRODUCTS_COLLECTION}/${id}`);
+  }
+}
+
+// Update Cost (HPP) & Selling Price with auto profit ratio calculation
+export async function updateProductPricing(
+  id: string, 
+  costPrice: number, 
+  price: number
+): Promise<void> {
+  try {
+    const docRef = doc(db, PRODUCTS_COLLECTION, id);
+    await updateDoc(docRef, {
+      costPrice: Math.max(0, costPrice),
+      price: Math.max(0, price),
+      updatedAt: new Date().toISOString(),
+    });
+  } catch (error) {
+    handleFirestoreError(error, OperationType.UPDATE, `${PRODUCTS_COLLECTION}/${id}`);
+  }
+}
+
+// Bulk update pricing by profit ratio (e.g. apply 50% markup to selected or all items)
+export async function bulkApplyMarkupRatio(
+  items: { id: string; costPrice: number; markupPercent: number }[]
+): Promise<void> {
+  try {
+    const batch = writeBatch(db);
+    for (const item of items) {
+      const docRef = doc(db, PRODUCTS_COLLECTION, item.id);
+      // New selling price = costPrice + (costPrice * markup / 100)
+      const newSellingPrice = Math.round(item.costPrice * (1 + item.markupPercent / 100) / 1000) * 1000;
+      batch.update(docRef, {
+        costPrice: item.costPrice,
+        price: newSellingPrice,
+        updatedAt: new Date().toISOString(),
+      });
+    }
+    await batch.commit();
+  } catch (error) {
+    handleFirestoreError(error, OperationType.WRITE, PRODUCTS_COLLECTION);
   }
 }
 

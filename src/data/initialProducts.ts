@@ -3,10 +3,13 @@ import { Product } from '../types';
 export const INITIAL_PRODUCTS: Omit<Product, 'id'>[] = [
   // --- Kategori 1: Buket Bunga (4 Produk) ---
   {
+    sku: 'FLR-BKT-01',
     name: 'Velvet Red Rose Romance',
     category: 'Buket Bunga',
+    costPrice: 250000,
     price: 450000,
     stock: 15,
+    minStockAlert: 5,
     description: 'Buket elegan 20 tangkai mawar merah impor kualitas premium, dipadukan dengan aksen baby’s breath putih dan daun eucalyptus aromatik. Dibungkus dengan kertas wrapping matte hitam-emas mewah.',
     imageUrl: 'https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=800&q=80',
     rating: 4.9,
@@ -17,10 +20,13 @@ export const INITIAL_PRODUCTS: Omit<Product, 'id'>[] = [
     dimensions: 'Tinggi 55 cm, Lebar 40 cm'
   },
   {
+    sku: 'FLR-BKT-02',
     name: 'Pastel Dream Tulip Symphony',
     category: 'Buket Bunga',
+    costPrice: 320000,
     price: 580000,
     stock: 12,
+    minStockAlert: 4,
     description: 'Perpaduan 15 tangkai bunga tulip Belanda bernuansa soft blush pink dan putih salju. Tampilan minimalis modern khas florist Paris dengan pita satin sutra premium.',
     imageUrl: 'https://images.unsplash.com/photo-1520763185298-1b434c919102?auto=format&fit=crop&w=800&q=80',
     rating: 4.8,
@@ -31,10 +37,13 @@ export const INITIAL_PRODUCTS: Omit<Product, 'id'>[] = [
     dimensions: 'Tinggi 45 cm, Lebar 35 cm'
   },
   {
+    sku: 'FLR-BKT-03',
     name: 'Golden Sunflower & Chamomile Cheer',
     category: 'Buket Bunga',
+    costPrice: 210000,
     price: 380000,
     stock: 20,
+    minStockAlert: 5,
     description: 'Buket penyemangat cerah dengan 5 kuntum bunga matahari mekar sempurna, bunga chamomile mungil, aster kuning ceria, dan daun ruscus segar. Sempurna untuk graduation dan lekas sembuh.',
     imageUrl: 'https://images.unsplash.com/photo-1597848212624-a19eb35e2651?auto=format&fit=crop&w=800&q=80',
     rating: 4.9,
@@ -45,10 +54,13 @@ export const INITIAL_PRODUCTS: Omit<Product, 'id'>[] = [
     dimensions: 'Tinggi 50 cm, Lebar 38 cm'
   },
   {
+    sku: 'FLR-BKT-04',
     name: 'Midnight Hydrangea & White Lily',
     category: 'Buket Bunga',
+    costPrice: 350000,
     price: 620000,
     stock: 8,
+    minStockAlert: 3,
     description: 'Komposisi puitis bunga hydrangea biru safir dengan lily casablanca wangi dan mawar putih avalanche. Desain mewah eksklusif untuk momen anniversary tak terlupakan.',
     imageUrl: 'https://images.unsplash.com/photo-1508610048659-a06b669e3321?auto=format&fit=crop&w=800&q=80',
     rating: 5.0,
@@ -61,10 +73,13 @@ export const INITIAL_PRODUCTS: Omit<Product, 'id'>[] = [
 
   // --- Kategori 2: Standing Flower (4 Produk) ---
   {
+    sku: 'FLR-STN-01',
     name: 'Grandeur Congratulations Standing Flower',
     category: 'Standing Flower',
+    costPrice: 720000,
     price: 1250000,
     stock: 6,
+    minStockAlert: 2,
     description: 'Standing flower megah untuk peresmian toko, promosi jabatan, dan pembukaan kantor baru. Rangkaian gerbera merah-oranye, lily kuning harum, snapdragon, dan anturium merah dengan pita ucapan custom.',
     imageUrl: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=800&q=80',
     rating: 4.9,
@@ -75,10 +90,13 @@ export const INITIAL_PRODUCTS: Omit<Product, 'id'>[] = [
     dimensions: 'Tinggi 180 cm, Lebar 80 cm'
   },
   {
+    sku: 'FLR-STN-02',
     name: 'Serene Solace Condolence Flower',
     category: 'Standing Flower',
+    costPrice: 550000,
     price: 980000,
     stock: 10,
+    minStockAlert: 3,
     description: 'Rangkaian standing duka cita bernuansa putih dan krem menenangkan. Memadukan krisan putih impor, mawar putih avalanche, aster, dan daun palem elegan untuk ungkapan belasungkawa tulus.',
     imageUrl: 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=800&q=80',
     rating: 4.8,
@@ -89,10 +107,13 @@ export const INITIAL_PRODUCTS: Omit<Product, 'id'>[] = [
     dimensions: 'Tinggi 170 cm, Lebar 75 cm'
   },
   {
+    sku: 'FLR-STN-03',
     name: 'Royal Majesty 2-Tier Grand Opening',
     category: 'Standing Flower',
+    costPrice: 950000,
     price: 1650000,
     stock: 5,
+    minStockAlert: 2,
     description: 'Standing flower premium dua tingkat bernuansa kemewahan kerajaan. Memadukan anggrek cymbidium eksotis, mawar merah kasmir, lili oriental, dan dedaunan monstera tropis.',
     imageUrl: 'https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&w=800&q=80',
     rating: 5.0,
@@ -103,10 +124,13 @@ export const INITIAL_PRODUCTS: Omit<Product, 'id'>[] = [
     dimensions: 'Tinggi 210 cm, Lebar 95 cm'
   },
   {
+    sku: 'FLR-STN-04',
     name: 'Graceful Romance Wedding Standing',
     category: 'Standing Flower',
+    costPrice: 650000,
     price: 1150000,
     stock: 7,
+    minStockAlert: 3,
     description: 'Standing flower khusus pernikahan dan pertunangan bernuansa peach pastel, dusty rose, dan ivory. Dilengkapi banner pita satin eksklusif nama mempelai.',
     imageUrl: 'https://images.unsplash.com/photo-1521737852567-6949f3f9f2b5?auto=format&fit=crop&w=800&q=80',
     rating: 4.9,
@@ -119,10 +143,13 @@ export const INITIAL_PRODUCTS: Omit<Product, 'id'>[] = [
 
   // --- Kategori 3: Bunga Meja (4 Produk) ---
   {
+    sku: 'FLR-MJA-01',
     name: 'Mon Amour Velvet Bloom Box',
     category: 'Bunga Meja',
+    costPrice: 420000,
     price: 750000,
     stock: 14,
+    minStockAlert: 4,
     description: 'Bloom box silinder beludru blush pink berisi 24 tangkai mawar merah muda kuncup segar dengan sentuhan mawar putih dan pita mewah. Siap mempercantik meja kerja maupun meja rias.',
     imageUrl: 'https://images.unsplash.com/photo-1582794543139-8ac9cb0f7b11?auto=format&fit=crop&w=800&q=80',
     rating: 4.9,
@@ -133,10 +160,13 @@ export const INITIAL_PRODUCTS: Omit<Product, 'id'>[] = [
     dimensions: 'Diameter Box 22 cm, Tinggi 28 cm'
   },
   {
+    sku: 'FLR-MJA-02',
     name: 'Emerald Phalaenopsis Orchid Glass Vase',
     category: 'Bunga Meja',
+    costPrice: 480000,
     price: 850000,
     stock: 9,
+    minStockAlert: 3,
     description: 'Dua tangkai anggrek bulan (phalaenopsis) ungu gradasi segar dalam vas kaca bening dengan batu apung dan lumut hutan alami. Tahan mekar berminggu-minggu, sangat prestisius.',
     imageUrl: 'https://images.unsplash.com/photo-1566977776052-6e61e357e4e1?auto=format&fit=crop&w=800&q=80',
     rating: 4.8,
@@ -147,10 +177,13 @@ export const INITIAL_PRODUCTS: Omit<Product, 'id'>[] = [
     dimensions: 'Tinggi 65 cm, Diameter Vas 18 cm'
   },
   {
+    sku: 'FLR-MJA-03',
     name: 'Rustic Terracotta Ceramic Arrangement',
     category: 'Bunga Meja',
+    costPrice: 280000,
     price: 520000,
     stock: 16,
+    minStockAlert: 4,
     description: 'Rangkaian bunga meja gaya rustic modern dalam pot keramik artisanal. Perpaduan mawar toffee, pompom chrysanthemum, craspedia kuning, dan dedaunan kering awet.',
     imageUrl: 'https://images.unsplash.com/photo-1487070183336-b863922373d4?auto=format&fit=crop&w=800&q=80',
     rating: 4.7,
@@ -161,10 +194,13 @@ export const INITIAL_PRODUCTS: Omit<Product, 'id'>[] = [
     dimensions: 'Tinggi 35 cm, Lebar 30 cm'
   },
   {
+    sku: 'FLR-MJA-04',
     name: 'Pure Serenity Casablanca Lily Vase',
     category: 'Bunga Meja',
+    costPrice: 380000,
     price: 680000,
     stock: 11,
+    minStockAlert: 3,
     description: 'Rangkaian meja elegan dengan 6 kuntum lily casablanca putih harum semerbak, mawar putih, dan daun monstera mini dalam vas keramik putih dove minimalis.',
     imageUrl: 'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?auto=format&fit=crop&w=800&q=80',
     rating: 4.9,

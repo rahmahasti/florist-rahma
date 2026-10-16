@@ -11,9 +11,11 @@ import { OrderTrackerModal } from './components/OrderTrackerModal';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { Footer } from './components/Footer';
 
-import { Product, Order, Customer } from './types';
+import { Product, Order, Customer, PosTransaction, InventoryLog } from './types';
 import { seedProductsIfEmpty, subscribeToProducts } from './services/productService';
 import { subscribeToOrders, subscribeToCustomers } from './services/orderService';
+import { subscribeToPosTransactions, subscribeToInventoryLogs } from './services/posService';
+import { PosKasir } from './components/pos/PosKasir';
 import { testConnection } from './firebase';
 import { Flower2 } from 'lucide-react';
 
@@ -21,10 +23,13 @@ function FloristiqueApp() {
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
+  const [posTransactions, setPosTransactions] = useState<PosTransaction[]>([]);
+  const [inventoryLogs, setInventoryLogs] = useState<InventoryLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Views & Modals
-  const [currentView, setCurrentView] = useState<'store' | 'admin'>('store');
+  // Views & Modals ('store' | 'pos' | 'admin')
+  const [currentView, setCurrentView] = useState<'store' | 'pos' | 'admin'>('store');
+  const [adminDefaultTab, setAdminDefaultTab] = useState<'orders' | 'pos' | 'products' | 'inventory' | 'pricing' | 'customers' | 'reports'>('orders');
   const [selectedCategory, setSelectedCategory] = useState<string>('Semua');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -38,6 +43,8 @@ function FloristiqueApp() {
     let unsubProducts: (() => void) | undefined;
     let unsubOrders: (() => void) | undefined;
     let unsubCustomers: (() => void) | undefined;
+    let unsubPos: (() => void) | undefined;
+    let unsubInventory: (() => void) | undefined;
 
     async function initApp() {
       try {
@@ -60,6 +67,14 @@ function FloristiqueApp() {
         unsubCustomers = subscribeToCustomers((custs) => {
           setCustomers(custs);
         });
+
+        unsubPos = subscribeToPosTransactions((txs) => {
+          setPosTransactions(txs);
+        });
+
+        unsubInventory = subscribeToInventoryLogs((logs) => {
+          setInventoryLogs(logs);
+        });
       } catch (err) {
         console.error('Initialization error:', err);
         setIsLoading(false);
@@ -72,6 +87,8 @@ function FloristiqueApp() {
       if (unsubProducts) unsubProducts();
       if (unsubOrders) unsubOrders();
       if (unsubCustomers) unsubCustomers();
+      if (unsubPos) unsubPos();
+      if (unsubInventory) unsubInventory();
     };
   }, []);
 
@@ -87,7 +104,7 @@ function FloristiqueApp() {
 
   return (
     <div className="min-h-screen bg-[#faf8f7] text-[#283830] flex flex-col font-sans selection:bg-[#c97486] selection:text-white">
-      {/* Global Navbar with direct mode switcher and no login button */}
+      {/* Global Navbar with direct 3-mode switcher (Toko, Kasir POS, Admin Panel) and no login button */}
       <Navbar
         onOpenOrderTracker={() => {
           setTrackerSearchNumber('');
@@ -114,12 +131,31 @@ function FloristiqueApp() {
               <p className="text-xs text-[#a84457] mt-1 font-medium">Memuat 12 koleksi bunga segar & sinkronisasi real-time Firestore...</p>
             </div>
           </div>
+        ) : currentView === 'pos' ? (
+          <PosKasir
+            products={products}
+            customers={customers}
+            posTransactions={posTransactions}
+            onReturnToStore={() => setCurrentView('store')}
+            onOpenInventory={() => {
+              setAdminDefaultTab('inventory');
+              setCurrentView('admin');
+            }}
+            onOpenPricing={() => {
+              setAdminDefaultTab('pricing');
+              setCurrentView('admin');
+            }}
+          />
         ) : currentView === 'admin' ? (
           <AdminDashboard
             products={products}
             orders={orders}
             customers={customers}
+            inventoryLogs={inventoryLogs}
+            posTransactions={posTransactions}
+            defaultTab={adminDefaultTab}
             onReturnToStore={() => setCurrentView('store')}
+            onOpenPos={() => setCurrentView('pos')}
           />
         ) : (
           <div>
