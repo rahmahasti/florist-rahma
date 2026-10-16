@@ -9,6 +9,8 @@ import { CheckoutModal } from './components/CheckoutModal';
 import { OrderConfirmationModal } from './components/OrderConfirmationModal';
 import { OrderTrackerModal } from './components/OrderTrackerModal';
 import { AdminDashboard } from './components/admin/AdminDashboard';
+import { AdminLoginModal } from './components/admin/AdminLoginModal';
+import { AdminLoginPage } from './components/admin/AdminLoginPage';
 import { Footer } from './components/Footer';
 
 import { Product, Order, Customer, PosTransaction, InventoryLog } from './types';
@@ -17,9 +19,12 @@ import { subscribeToOrders, subscribeToCustomers } from './services/orderService
 import { subscribeToPosTransactions, subscribeToInventoryLogs } from './services/posService';
 import { PosKasir } from './components/pos/PosKasir';
 import { testConnection } from './firebase';
-import { Flower2 } from 'lucide-react';
+import { useAuth } from './context/AuthContext';
+import { Flower2, Lock, Zap } from 'lucide-react';
 
 function FloristiqueApp() {
+  const { isAdmin, loginWithCredentials } = useAuth();
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -104,12 +109,13 @@ function FloristiqueApp() {
 
   return (
     <div className="min-h-screen bg-[#faf8f7] text-[#283830] flex flex-col font-sans selection:bg-[#c97486] selection:text-white">
-      {/* Global Navbar with direct 3-mode switcher (Toko, Kasir POS, Admin Panel) and no login button */}
+      {/* Global Navbar with 3-mode switcher & Admin Login */}
       <Navbar
         onOpenOrderTracker={() => {
           setTrackerSearchNumber('');
           setIsOrderTrackerOpen(true);
         }}
+        onOpenLogin={() => setIsLoginModalOpen(true)}
         currentView={currentView}
         setCurrentView={setCurrentView}
         orders={orders}
@@ -147,16 +153,23 @@ function FloristiqueApp() {
             }}
           />
         ) : currentView === 'admin' ? (
-          <AdminDashboard
-            products={products}
-            orders={orders}
-            customers={customers}
-            inventoryLogs={inventoryLogs}
-            posTransactions={posTransactions}
-            defaultTab={adminDefaultTab}
-            onReturnToStore={() => setCurrentView('store')}
-            onOpenPos={() => setCurrentView('pos')}
-          />
+          !isAdmin ? (
+            <AdminLoginPage
+              onLoginSuccess={() => setCurrentView('admin')}
+              onReturnToStore={() => setCurrentView('store')}
+            />
+          ) : (
+            <AdminDashboard
+              products={products}
+              orders={orders}
+              customers={customers}
+              inventoryLogs={inventoryLogs}
+              posTransactions={posTransactions}
+              defaultTab={adminDefaultTab}
+              onReturnToStore={() => setCurrentView('store')}
+              onOpenPos={() => setCurrentView('pos')}
+            />
+          )
         ) : (
           <div>
             {/* Hero Section */}
@@ -181,8 +194,8 @@ function FloristiqueApp() {
         )}
       </main>
 
-      {/* Footer without login button */}
-      <Footer />
+      {/* Footer */}
+      <Footer onOpenLogin={() => setIsLoginModalOpen(true)} />
 
       {/* Slide-over Cart Drawer */}
       <CartDrawer onProceedToCheckout={() => setIsCheckoutOpen(true)} />
@@ -207,6 +220,16 @@ function FloristiqueApp() {
         onClose={() => setIsOrderTrackerOpen(false)}
         orders={orders}
         initialSearchNumber={trackerSearchNumber}
+      />
+
+      {/* Admin Login Modal */}
+      <AdminLoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        onLoginSuccess={() => {
+          setIsLoginModalOpen(false);
+          setCurrentView('admin');
+        }}
       />
     </div>
   );

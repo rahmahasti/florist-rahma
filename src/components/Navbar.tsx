@@ -9,13 +9,18 @@ import {
   Sparkles,
   LayoutDashboard,
   Store,
-  CreditCard
+  CreditCard,
+  Lock,
+  User,
+  LogOut
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { Order } from '../types';
 
 interface NavbarProps {
   onOpenOrderTracker: () => void;
+  onOpenLogin: () => void;
   currentView: 'store' | 'pos' | 'admin';
   setCurrentView: (view: 'store' | 'pos' | 'admin') => void;
   orders: Order[];
@@ -27,6 +32,7 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({
   onOpenOrderTracker,
+  onOpenLogin,
   currentView,
   setCurrentView,
   orders,
@@ -36,6 +42,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   setSelectedCategory,
 }) => {
   const { totalItems, setIsCartOpen } = useCart();
+  const { isAdmin, adminUser, logout } = useAuth();
 
   // Count orders pending payment approval for admin notification badge
   const pendingApprovalCount = orders.filter(
@@ -140,7 +147,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             )}
 
-            {/* Seamless Mode Switcher: Toko vs Kasir POS vs Admin Panel (no login button) */}
+            {/* Mode Switcher: Toko vs Kasir POS vs Admin Panel */}
             <div className="flex items-center border-l border-[#f0dce1] pl-2 sm:pl-3">
               <div className="bg-[#f7f5f4] p-1 rounded-2xl border border-[#ebd7dc] flex items-center gap-1">
                 
@@ -192,6 +199,38 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </button>
 
               </div>
+
+              {/* Login Admin Button or Admin User Profile Pill */}
+              {!isAdmin ? (
+                <button
+                  onClick={() => setCurrentView('admin')}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-[#fcedf0] text-[#9c4355] hover:bg-[#fae1e6] border border-[#f5d5dd] transition-all shadow-2xs ml-1.5 sm:ml-2"
+                  title="Halaman Login Administrator Toko"
+                >
+                  <Lock className="w-3.5 h-3.5 text-[#b5586b]" />
+                  <span className="hidden sm:inline">Login Admin</span>
+                </button>
+              ) : (
+                <div className="flex items-center gap-1 ml-1.5 sm:ml-2">
+                  <div 
+                    onClick={() => setCurrentView('admin')}
+                    className="cursor-pointer inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-xl bg-[#edf5f0] text-[#395c47] border border-[#d2e6d8] hover:bg-[#e2efe7] transition-all"
+                    title={`Admin aktif: ${adminUser?.displayName || 'Admin'}`}
+                  >
+                    <span className="w-2 h-2 rounded-full bg-[#3f6351]"></span>
+                    <span className="hidden md:inline max-w-[90px] truncate">
+                      {adminUser?.displayName?.split(' ')[0] || 'Admin'}
+                    </span>
+                  </div>
+                  <button
+                    onClick={logout}
+                    className="p-1.5 text-[#7c8982] hover:text-[#9c3447] hover:bg-[#fdf0f2] rounded-xl transition-colors border border-transparent hover:border-[#f5c7d1]"
+                    title="Keluar dari Akun Admin"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
             </div>
 
           </div>

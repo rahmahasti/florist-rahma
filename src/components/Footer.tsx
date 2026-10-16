@@ -1,9 +1,11 @@
 import React from 'react';
 import { Flower2, Phone, Mail, MapPin, Clock, ShieldCheck, Heart } from 'lucide-react';
 
-interface FooterProps {}
+interface FooterProps {
+  onOpenLogin?: () => void;
+}
 
-export const Footer: React.FC<FooterProps> = () => {
+export const Footer: React.FC<FooterProps> = ({ onOpenLogin }) => {
   return (
     <footer className="bg-[#2f453a] text-[#f7e6ea] pt-16 pb-12 border-t border-[#3e5b4d]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -86,7 +88,7 @@ export const Footer: React.FC<FooterProps> = () => {
 
         </div>
 
-        {/* Bottom bar - clean without login button */}
+        {/* Bottom bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#fae1e7]/60">
           <p className="flex items-center gap-1">
             © {new Date().getFullYear()} Rahma Florist Marketplace. Dibuat dengan harmoni hijau & pink <Heart className="w-3.5 h-3.5 text-[#f7aab9] fill-[#f7aab9] inline" /> untuk setiap momen bermakna.
@@ -94,6 +96,14 @@ export const Footer: React.FC<FooterProps> = () => {
 
           <div className="flex items-center gap-4 text-[#8bd1ab]">
             <span>Database: Google Cloud Firestore Real-Time</span>
+            {onOpenLogin && (
+              <button
+                onClick={onOpenLogin}
+                className="text-[#fcd3dd] hover:text-white transition-colors underline cursor-pointer"
+              >
+                Login Admin
+              </button>
+            )}
           </div>
         </div>
 

@@ -30,8 +30,11 @@ import {
   CreditCard,
   Tag,
   Calculator,
-  Store
+  Store,
+  LogOut,
+  User
 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import { Product, Order, Customer, ProductCategory, OrderStatus, InventoryLog, PosTransaction } from '../../types';
 import { 
   updateProductStock, 
@@ -71,6 +74,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   onReturnToStore,
   onOpenPos,
 }) => {
+  const { adminUser, logout } = useAuth();
   const [activeTab, setActiveTab] = useState<'orders' | 'pos' | 'products' | 'inventory' | 'pricing' | 'customers' | 'reports'>(defaultTab);
 
   useEffect(() => {
@@ -338,8 +342,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </div>
             </div>
 
-            {/* Quick action buttons */}
-            <div className="flex items-center gap-2.5">
+            {/* Quick action buttons & Admin User status */}
+            <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
               <button
                 onClick={onReturnToStore}
                 className="px-3.5 py-2 rounded-xl text-xs font-semibold text-[#324f40] bg-[#eef5f1] hover:bg-[#e2ede6] border border-[#d4e5db] transition-colors flex items-center gap-1.5"
@@ -354,12 +358,35 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     resetToDefault12Products().then(() => showNotification('12 Produk Rahma Florist berhasil di-reset ke data default!'));
                   }
                 }}
-                className="px-3.5 py-2 rounded-xl text-xs font-medium text-[#5c6962] border border-[#ebd0d6] hover:bg-[#fbf4f6] transition-colors flex items-center gap-1.5"
+                className="px-3 py-2 rounded-xl text-xs font-medium text-[#5c6962] border border-[#ebd0d6] hover:bg-[#fbf4f6] transition-colors flex items-center gap-1.5"
                 title="Reset database produk ke 12 bunga standar"
               >
                 <RotateCcw className="w-3.5 h-3.5 text-[#b5586b]" />
-                <span>Reset 12 Produk</span>
+                <span className="hidden sm:inline">Reset 12 Produk</span>
               </button>
+
+              {/* Admin Profile & Logout Button */}
+              <div className="flex items-center gap-2 pl-2 border-l border-[#ebd2d7]">
+                <div className="hidden lg:block text-right">
+                  <div className="text-xs font-semibold text-[#283830] leading-tight">
+                    {adminUser?.displayName || 'Rahma Hasti'}
+                  </div>
+                  <div className="text-[10px] text-[#b5586b] font-medium leading-tight">
+                    {adminUser?.email || 'Super Admin'}
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    logout();
+                    onReturnToStore();
+                  }}
+                  className="px-3 py-2 rounded-xl text-xs font-semibold text-[#9c3447] bg-[#fdf0f2] hover:bg-[#fae1e6] border border-[#f5c7d1] transition-colors flex items-center gap-1.5 shadow-2xs"
+                  title="Keluar dari Panel Admin"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>Keluar</span>
+                </button>
+              </div>
             </div>
 
           </div>
